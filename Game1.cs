@@ -19,6 +19,7 @@ namespace Penguin_Spinner_Casino_Game
         Rectangle buttonRect;
         MouseState mouse, prevMouse;
         Screen screen;
+        int counter = 00;
         enum Screen
         {
             menu, 
@@ -38,7 +39,6 @@ namespace Penguin_Spinner_Casino_Game
         {
             // TODO: Add your initialization logic here
             rand = new();
-            textures = new();
             screen = Screen.menu;
             profit = 0;
             buttonRect = new Rectangle(0,0,1000,1000);
@@ -50,6 +50,12 @@ namespace Penguin_Spinner_Casino_Game
             _spriteBatch = new SpriteBatch(GraphicsDevice);
 
             kahootMusic = Content.Load<SoundEffect>("lobby-classic-game").CreateInstance();
+            textures = new() 
+            {
+                Content.Load<Texture2D>("Jackpot"),
+                Content.Load<Texture2D>("SadPrivate"),
+                Content.Load<Texture2D>("PenguinDice"),
+            };
             // TODO: use this.Content to load your game content here
         }
 
@@ -63,7 +69,7 @@ namespace Penguin_Spinner_Casino_Game
             switch (screen)
             {
                 case Screen.menu:
-                    if (mouse.LeftButton == ButtonState.Pressed && prevMouse.LeftButton == ButtonState.Released && buttonRect.Contains(mouse.X, mouse.Y))
+                    if ((mouse.LeftButton == ButtonState.Pressed && prevMouse.LeftButton == ButtonState.Released && buttonRect.Contains(mouse.X, mouse.Y)) || counter > 0)
                     {
                         spun = rand.Next(1, 51);
                         bet = rand.Next(1,26);
@@ -83,6 +89,7 @@ namespace Penguin_Spinner_Casino_Game
                                 screen = Screen.coin;
                                 break;
                         }
+                        counter--;
                     }
                     break;
                 case Screen.lose:

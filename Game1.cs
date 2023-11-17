@@ -18,6 +18,8 @@ namespace Penguin_Spinner_Casino_Game
         List<Texture2D> textures;
         Rectangle buttonRect;
         MouseState mouse, prevMouse;
+        float rotation;
+        Vector2 origin;
         Screen screen;
         int counter = 00;
         enum Screen
@@ -43,6 +45,7 @@ namespace Penguin_Spinner_Casino_Game
             profit = 0;
             buttonRect = new Rectangle(0,0,1000,1000);
             base.Initialize();
+            origin = new Vector2(textures[0].Width/2, textures[0].Height/2);
         }
 
         protected override void LoadContent()
@@ -52,6 +55,7 @@ namespace Penguin_Spinner_Casino_Game
             kahootMusic = Content.Load<SoundEffect>("lobby-classic-game").CreateInstance();
             textures = new() 
             {
+                Content.Load<Texture2D>("Spinner"),
                 Content.Load<Texture2D>("Jackpot"),
                 Content.Load<Texture2D>("SadPrivate"),
                 Content.Load<Texture2D>("PenguinDice"),
@@ -66,6 +70,7 @@ namespace Penguin_Spinner_Casino_Game
             kahootMusic.Play();
             if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed || Keyboard.GetState().IsKeyDown(Keys.Escape))
                 Exit();
+            rotation += 0.2f;
             switch (screen)
             {
                 case Screen.menu:
@@ -138,6 +143,9 @@ namespace Penguin_Spinner_Casino_Game
             GraphicsDevice.Clear(Color.CornflowerBlue);
 
             // TODO: Add your drawing code here
+            _spriteBatch.Begin();
+            _spriteBatch.Draw(textures[0], new Rectangle(200, 200, 400, 400), null, Color.White, rotation, origin, SpriteEffects.None, 0f);
+            _spriteBatch.End();
 
             base.Draw(gameTime);
         }

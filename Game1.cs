@@ -16,12 +16,13 @@ namespace Penguin_Spinner_Casino_Game
         private int spun, bet, roll1, roll2, coinFlip, payout, profit;
         SoundEffectInstance kahootMusic;
         List<Texture2D> textures;
-        Rectangle buttonRect;
+        Button spinButton;
         MouseState mouse, prevMouse;
         float rotation;
         Vector2 origin;
         Screen screen;
-        int counter = 00;
+        int counter;
+        Button[] betButtons;
         enum Screen
         {
             menu, 
@@ -40,10 +41,13 @@ namespace Penguin_Spinner_Casino_Game
         protected override void Initialize()
         {
             // TODO: Add your initialization logic here
+            _graphics.PreferredBackBufferWidth = 1900;
+            _graphics.PreferredBackBufferHeight = 999;
+            _graphics.ApplyChanges();
             rand = new();
             screen = Screen.menu;
             profit = 0;
-            buttonRect = new Rectangle(0,0,1000,1000);
+            bet = 5;
             base.Initialize();
             origin = new Vector2(textures[0].Width/2, textures[0].Height/2);
         }
@@ -60,6 +64,21 @@ namespace Penguin_Spinner_Casino_Game
                 Content.Load<Texture2D>("SadPrivate"),
                 Content.Load<Texture2D>("PenguinDice"),
             };
+            SpriteFont font = Content.Load<SpriteFont>("Font");
+            Texture2D rectTex= Content.Load<Texture2D>("Rectangle");
+
+            int counter2 = 1;
+            betButtons = new Button[25];
+            for (int i = 0; i < 5; i++)
+            {
+                for (int j = 0; j<5; j++)
+                {
+                    betButtons[counter2 - 1] = new Button(rectTex, font, counter2, new Rectangle(1100 + (j * 140), 70 + (i * 140), 120, 120));
+                    counter2++;
+                }
+            }
+            spinButton = new(rectTex, font, "Spin", new Rectangle(1350, 800, 200, 110));
+            betButtons[4].SwitchColor();
             // TODO: use this.Content to load your game content here
         }
 
@@ -70,31 +89,47 @@ namespace Penguin_Spinner_Casino_Game
             kahootMusic.Play();
             if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed || Keyboard.GetState().IsKeyDown(Keys.Escape))
                 Exit();
-            rotation += 0.2f;
+            rotation += 0.12f;
             switch (screen)
             {
                 case Screen.menu:
-                    if ((mouse.LeftButton == ButtonState.Pressed && prevMouse.LeftButton == ButtonState.Released && buttonRect.Contains(mouse.X, mouse.Y)) || counter > 0)
+                    if ((mouse.LeftButton == ButtonState.Pressed && prevMouse.LeftButton == ButtonState.Released))
                     {
-                        spun = rand.Next(1, 51);
-                        bet = rand.Next(1,26);
-                        profit -= bet;
-                        switch (spun)
+                        if (spinButton.Rectangle.Contains(mouse.X, mouse.Y))
                         {
-                            case <= 5:
-                                screen = Screen.jackpot;
-                                break;
-                            case <= 10:
-                                screen = Screen.lose;
-                                break;
-                            case <= 30:
-                                screen = Screen.dice;
-                                break;
-                            case <= 50:
-                                screen = Screen.coin;
-                                break;
+                            spun = rand.Next(1, 51);
+                            profit -= bet;
+                            switch (spun)
+                            {
+                                case <= 5:
+                                    screen = Screen.jackpot;
+                                    break;
+                                case <= 10:
+                                    screen = Screen.lose;
+                                    break;
+                                case <= 30:
+                                    screen = Screen.dice;
+                                    break;
+                                case <= 50:
+                                    screen = Screen.coin;
+                                    break;
+                            }
                         }
-                        counter--;
+                        else
+                        {
+                            for (int i = 0; i< 25; i++)
+                            {
+                                if (betButtons[i].Rectangle.Contains(mouse.X, mouse.Y))
+                                {
+                                    if (i+1 != bet)
+                                    {
+                                        betButtons[bet - 1].SwitchColor(false);
+                                        betButtons[i].SwitchColor(true);
+                                        bet = i + 1;
+                                    }
+                                }
+                            }
+                        }
                     }
                     break;
                 case Screen.lose:
@@ -140,11 +175,16 @@ namespace Penguin_Spinner_Casino_Game
 
         protected override void Draw(GameTime gameTime)
         {
-            GraphicsDevice.Clear(Color.CornflowerBlue);
+            GraphicsDevice.Clear(Color.Purple);
 
             // TODO: Add your drawing code here
             _spriteBatch.Begin();
-            _spriteBatch.Draw(textures[0], new Rectangle(200, 200, 400, 400), null, Color.White, rotation, origin, SpriteEffects.None, 0f);
+            _spriteBatch.Draw(textures[0], new Rectangle(400, 500, 800, 800), null, Color.White, rotation, origin, SpriteEffects.None, 0f);
+            foreach (Button b in betButtons)
+            {
+                b.Draw(_spriteBatch);
+            }
+            spinButton.Draw(_spriteBatch);
             _spriteBatch.End();
 
             base.Draw(gameTime);

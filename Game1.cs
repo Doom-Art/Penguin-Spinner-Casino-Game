@@ -113,6 +113,7 @@ namespace Penguin_Spinner_Casino_Game
                 {
                     writer.WriteLine(r);
                 }
+                writer.WriteLine($"\nOur Profit: {profit}");
                 writer.Close();
                 Exit();
             }
@@ -127,6 +128,7 @@ namespace Penguin_Spinner_Casino_Game
                         {
                             spin = rand.Next(1, 51);
                             spun = true;
+                            profit += bet;
                         }
                         else
                         {
@@ -205,6 +207,7 @@ namespace Penguin_Spinner_Casino_Game
                     if (mouse.LeftButton == ButtonState.Pressed && prevMouse.LeftButton == ButtonState.Released)
                     {
                         screen = Screen.menu;
+                        profit -= payout;
                         records.Add(new Records(bet, payout));
                     }
                     break;
@@ -213,6 +216,7 @@ namespace Penguin_Spinner_Casino_Game
                     if (mouse.LeftButton == ButtonState.Pressed && prevMouse.LeftButton == ButtonState.Released)
                     {
                         screen = Screen.menu;
+                        profit -= payout;
                         records.Add(new Records(bet, payout));
                     }
                     break;
@@ -231,6 +235,7 @@ namespace Penguin_Spinner_Casino_Game
                                 payout = (int)(1.5 * bet);
                             else
                                 payout = 0;
+                            profit -= payout;
                         }
                     }
                     else if (rolled && mouse.LeftButton == ButtonState.Pressed && prevMouse.LeftButton == ButtonState.Released)
@@ -256,6 +261,7 @@ namespace Penguin_Spinner_Casino_Game
                     else if (flipped && mouse.LeftButton == ButtonState.Pressed && prevMouse.LeftButton == ButtonState.Released)
                     {
                         screen = Screen.menu;
+                        profit -= payout;
                         records.Add(new Records(bet, payout, true, coinFlip == 0));
                         flipped = false;
                     }

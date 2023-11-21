@@ -14,7 +14,7 @@ namespace Penguin_Spinner_Casino_Game
         private SpriteBatch _spriteBatch;
 
         private Random rand;
-        private int spin, bet, roll1, roll2, coinFlip, payout, profit, saveNum, numberOfJackpot, numberOfInstaLose, numberOfDice, numberOfCF;
+        private int spin, bet, roll1, roll2, coinFlip, payout, profit, saveNum, numberOfJackpot, numberOfInstaLose, numberOfDice, numberOfCF, numberOfWins;
         SoundEffectInstance kahootMusic;
         List<Texture2D> textures;
         SpriteFont font;
@@ -54,6 +54,7 @@ namespace Penguin_Spinner_Casino_Game
             profit = 0;
             numberOfCF = 0;
             numberOfDice = 0;
+            numberOfWins = 0;
             numberOfInstaLose = 0;
             numberOfJackpot = 0;
             bet = 5;
@@ -117,6 +118,7 @@ namespace Penguin_Spinner_Casino_Game
                 {
                     writer.WriteLine(r);
                 }
+                writer.WriteLine($"\nTotal Times Spun: {records.Count}, Times Won: {numberOfWins} \nTimes Dice: {numberOfDice}, Times Flip: {numberOfCF}, Times Jackpot: {numberOfJackpot}, Times InstaLose: {numberOfInstaLose}");
                 writer.WriteLine($"\nOur Profit: {profit}");
                 writer.Close();
                 Exit();
@@ -214,6 +216,7 @@ namespace Penguin_Spinner_Casino_Game
                         profit -= payout;
                         records.Add(new Records(bet, payout));
                         numberOfJackpot += 1;
+                        numberOfWins += 1;
                         if (records.Count%10 == 0)
                         {
                             StreamWriter writer = new($"SaveFile#{saveNum}.txt");
@@ -270,6 +273,7 @@ namespace Penguin_Spinner_Casino_Game
                         records.Add(new Records(bet, payout, true, roll1, roll2));
                         rolled = false;
                         numberOfDice += 1;
+                        numberOfWins += 1;
                         if (records.Count % 10 == 0)
                         {
                             StreamWriter writer = new($"SaveFile#{saveNum}.txt");
@@ -300,6 +304,7 @@ namespace Penguin_Spinner_Casino_Game
                         screen = Screen.menu;
                         profit -= payout;
                         numberOfCF += 1;
+                        numberOfWins += 1;
                         records.Add(new Records(bet, payout, true, coinFlip == 0));
                         flipped = false;
                         if (records.Count % 10 == 0)

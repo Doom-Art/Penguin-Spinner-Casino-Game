@@ -4,6 +4,7 @@ using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using System;
 using System.Collections.Generic;
+using System.IO;
 
 namespace Penguin_Spinner_Casino_Game
 {
@@ -19,6 +20,7 @@ namespace Penguin_Spinner_Casino_Game
         SpriteFont font;
         Button spinButton, rollButton, flipButton;
         MouseState mouse, prevMouse;
+        List<Records> records;
         float rotation, rotationIncrease, timer;
         Vector2 origin;
         Screen screen;
@@ -47,6 +49,7 @@ namespace Penguin_Spinner_Casino_Game
             _graphics.PreferredBackBufferHeight = 999;
             _graphics.ApplyChanges();
             rand = new();
+            records = new();
             screen = Screen.menu;
             profit = 0;
             bet = 5;
@@ -104,7 +107,15 @@ namespace Penguin_Spinner_Casino_Game
             mouse = Mouse.GetState();
             kahootMusic.Play();
             if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed || Keyboard.GetState().IsKeyDown(Keys.Escape))
+            {
+                StreamWriter writer = new($"SaveFile#{rand.Next()}.txt");
+                foreach (Records r in records)
+                {
+                    writer.WriteLine(r);
+                }
+                writer.Close();
                 Exit();
+            }
             timer += (float)gameTime.ElapsedGameTime.TotalSeconds;
             switch (screen)
             {
@@ -194,6 +205,7 @@ namespace Penguin_Spinner_Casino_Game
                     if (mouse.LeftButton == ButtonState.Pressed && prevMouse.LeftButton == ButtonState.Released)
                     {
                         screen = Screen.menu;
+                        records.Add(new Records(bet, payout));
                     }
                     break;
                 case Screen.lose:
@@ -201,6 +213,7 @@ namespace Penguin_Spinner_Casino_Game
                     if (mouse.LeftButton == ButtonState.Pressed && prevMouse.LeftButton == ButtonState.Released)
                     {
                         screen = Screen.menu;
+                        records.Add(new Records(bet, payout));
                     }
                     break;
                 case Screen.dice:
@@ -223,6 +236,7 @@ namespace Penguin_Spinner_Casino_Game
                     else if (rolled && mouse.LeftButton == ButtonState.Pressed && prevMouse.LeftButton == ButtonState.Released)
                     {
                         screen = Screen.menu;
+                        records.Add(new Records(bet, payout, true, roll1, roll2));
                         rolled = false;
                     }
                     break;
@@ -242,6 +256,7 @@ namespace Penguin_Spinner_Casino_Game
                     else if (flipped && mouse.LeftButton == ButtonState.Pressed && prevMouse.LeftButton == ButtonState.Released)
                     {
                         screen = Screen.menu;
+                        records.Add(new Records(bet, payout, true, coinFlip == 0));
                         flipped = false;
                     }
                     break;

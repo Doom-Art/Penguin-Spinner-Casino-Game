@@ -44,7 +44,6 @@ namespace Penguin_Spinner_Casino_Game
 
         protected override void Initialize()
         {
-            // TODO: Add your initialization logic here
             _graphics.PreferredBackBufferWidth = 1900;
             _graphics.PreferredBackBufferHeight = 999;
             _graphics.ApplyChanges();
@@ -148,7 +147,7 @@ namespace Penguin_Spinner_Casino_Game
                     }
                     else if (rotationIncrease != 0 && spun)
                     {
-                        rotationIncrease = 0.09f;
+                        rotationIncrease = 0.07f;
                         var spinnerPos = rotation % 6.28;
                         timer = 0;
                         switch (spin)
@@ -267,7 +266,6 @@ namespace Penguin_Spinner_Casino_Game
                     }
                     break;
             }
-            // TODO: Add your update logic here
 
             base.Update(gameTime);
         }
@@ -276,7 +274,6 @@ namespace Penguin_Spinner_Casino_Game
         {
             GraphicsDevice.Clear(Color.Purple);
 
-            // TODO: Add your drawing code here
             _spriteBatch.Begin();
             if (screen == Screen.menu)
             {

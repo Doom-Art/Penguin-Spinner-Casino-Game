@@ -14,7 +14,7 @@ namespace Penguin_Spinner_Casino_Game
         private SpriteBatch _spriteBatch;
 
         private Random rand;
-        private int spin, bet, roll1, roll2, coinFlip, payout, profit;
+        private int spin, bet, roll1, roll2, coinFlip, payout, profit, saveNum, numberOfJackpot, numberOfInstaLose, numberOfDice, numberOfCF;
         SoundEffectInstance kahootMusic;
         List<Texture2D> textures;
         SpriteFont font;
@@ -48,9 +48,14 @@ namespace Penguin_Spinner_Casino_Game
             _graphics.PreferredBackBufferHeight = 999;
             _graphics.ApplyChanges();
             rand = new();
+            saveNum = rand.Next();
             records = new();
             screen = Screen.menu;
             profit = 0;
+            numberOfCF = 0;
+            numberOfDice = 0;
+            numberOfInstaLose = 0;
+            numberOfJackpot = 0;
             bet = 5;
             rotationIncrease = 0.12f;
             base.Initialize();
@@ -107,7 +112,7 @@ namespace Penguin_Spinner_Casino_Game
             kahootMusic.Play();
             if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed || Keyboard.GetState().IsKeyDown(Keys.Escape))
             {
-                StreamWriter writer = new($"SaveFile#{rand.Next()}.txt");
+                StreamWriter writer = new($"SaveFile#{saveNum}.txt");
                 foreach (Records r in records)
                 {
                     writer.WriteLine(r);
@@ -208,6 +213,17 @@ namespace Penguin_Spinner_Casino_Game
                         screen = Screen.menu;
                         profit -= payout;
                         records.Add(new Records(bet, payout));
+                        numberOfJackpot += 1;
+                        if (records.Count%10 == 0)
+                        {
+                            StreamWriter writer = new($"SaveFile#{saveNum}.txt");
+                            foreach (Records r in records)
+                            {
+                                writer.WriteLine(r);
+                            }
+                            writer.WriteLine($"\nOur Profit: {profit}");
+                            writer.Close();
+                        }
                     }
                     break;
                 case Screen.lose:
@@ -217,6 +233,17 @@ namespace Penguin_Spinner_Casino_Game
                         screen = Screen.menu;
                         profit -= payout;
                         records.Add(new Records(bet, payout));
+                        numberOfInstaLose += 1;
+                        if (records.Count % 10 == 0)
+                        {
+                            StreamWriter writer = new($"SaveFile#{saveNum}.txt");
+                            foreach (Records r in records)
+                            {
+                                writer.WriteLine(r);
+                            }
+                            writer.WriteLine($"\nOur Profit: {profit}");
+                            writer.Close();
+                        }
                     }
                     break;
                 case Screen.dice:
@@ -242,6 +269,17 @@ namespace Penguin_Spinner_Casino_Game
                         screen = Screen.menu;
                         records.Add(new Records(bet, payout, true, roll1, roll2));
                         rolled = false;
+                        numberOfDice += 1;
+                        if (records.Count % 10 == 0)
+                        {
+                            StreamWriter writer = new($"SaveFile#{saveNum}.txt");
+                            foreach (Records r in records)
+                            {
+                                writer.WriteLine(r);
+                            }
+                            writer.WriteLine($"\nOur Profit: {profit}");
+                            writer.Close();
+                        }
                     }
                     break;
                 case Screen.coin:
@@ -261,8 +299,19 @@ namespace Penguin_Spinner_Casino_Game
                     {
                         screen = Screen.menu;
                         profit -= payout;
+                        numberOfCF += 1;
                         records.Add(new Records(bet, payout, true, coinFlip == 0));
                         flipped = false;
+                        if (records.Count % 10 == 0)
+                        {
+                            StreamWriter writer = new($"SaveFile#{saveNum}.txt");
+                            foreach (Records r in records)
+                            {
+                                writer.WriteLine(r);
+                            }
+                            writer.WriteLine($"\nOur Profit: {profit}");
+                            writer.Close();
+                        }
                     }
                     break;
             }

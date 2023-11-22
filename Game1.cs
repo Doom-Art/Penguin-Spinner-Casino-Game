@@ -13,7 +13,7 @@ namespace Penguin_Spinner_Casino_Game
         private GraphicsDeviceManager _graphics;
         private SpriteBatch _spriteBatch;
 
-        private Random rand;
+        private Random rand, randBet;
         private int spin, bet, roll1, roll2, coinFlip, payout, profit, saveNum, numberOfJackpot, numberOfInstaLose, numberOfDice, numberOfCF, numberOfWins;
         SoundEffectInstance kahootMusic;
         List<Texture2D> textures;
@@ -26,7 +26,8 @@ namespace Penguin_Spinner_Casino_Game
         Screen screen;
         bool spun, rolled, flipped;
         Button[] betButtons;
-        Rectangle[] diceSourceRects; 
+        Rectangle[] diceSourceRects;
+        int simulation = 0;
         enum Screen
         {
             menu, 
@@ -44,10 +45,11 @@ namespace Penguin_Spinner_Casino_Game
 
         protected override void Initialize()
         {
-            _graphics.PreferredBackBufferWidth = 1900;
-            _graphics.PreferredBackBufferHeight = 999;
+            _graphics.PreferredBackBufferWidth = 1950;
+            _graphics.PreferredBackBufferHeight = 1100;
             _graphics.ApplyChanges();
             rand = new();
+            randBet = new();
             saveNum = rand.Next();
             records = new();
             screen = Screen.menu;
@@ -128,13 +130,23 @@ namespace Penguin_Spinner_Casino_Game
             {
                 case Screen.menu:
                     rotation += rotationIncrease;
-                    if ((mouse.LeftButton == ButtonState.Pressed && prevMouse.LeftButton == ButtonState.Released) && !spun)
+                    if (timer > 60)
                     {
-                        if (spinButton.Rectangle.Contains(mouse.X, mouse.Y))
+                        rotation = 0;
+                        timer = 0;
+                    }
+                    if (!spun &&(mouse.LeftButton == ButtonState.Pressed && prevMouse.LeftButton == ButtonState.Released || simulation > 0))
+                    {
+                        if (spinButton.Rectangle.Contains(mouse.X, mouse.Y) || simulation > 0)
                         {
+                            if (simulation > 0)
+                            {
+                                bet = randBet.Next(1, 26);
+                            }
                             spin = rand.Next(1, 51);
                             spun = true;
                             profit += bet;
+                            simulation--;
                         }
                         else
                         {
@@ -152,7 +164,7 @@ namespace Penguin_Spinner_Casino_Game
                             }
                         }
                     }
-                    else if (rotationIncrease != 0 && spun)
+                    else if ((rotationIncrease != 0 && spun) && simulation < 0)
                     {
                         rotationIncrease = 0.07f;
                         var spinnerPos = rotation % 6.28;
@@ -185,7 +197,7 @@ namespace Penguin_Spinner_Casino_Game
                                 break;
                         }
                     }
-                    else if (rotationIncrease == 0 && timer > 1)
+                    else if ((rotationIncrease == 0 && timer > 1) || simulation > 0)
                     {
                         switch (spin)
                         {
@@ -210,7 +222,7 @@ namespace Penguin_Spinner_Casino_Game
                     break;
                 case Screen.jackpot:
                     payout = bet * 3;
-                    if (mouse.LeftButton == ButtonState.Pressed && prevMouse.LeftButton == ButtonState.Released)
+                    if ((mouse.LeftButton == ButtonState.Pressed && prevMouse.LeftButton == ButtonState.Released) || simulation > 0)
                     {
                         screen = Screen.menu;
                         profit -= payout;
@@ -224,6 +236,7 @@ namespace Penguin_Spinner_Casino_Game
                             {
                                 writer.WriteLine(r);
                             }
+                            writer.WriteLine($"\nTotal Times Spun: {records.Count}, Times Won: {numberOfWins} \nTimes Dice: {numberOfDice}, Times Flip: {numberOfCF}, Times Jackpot: {numberOfJackpot}, Times InstaLose: {numberOfInstaLose}");
                             writer.WriteLine($"\nOur Profit: {profit}");
                             writer.Close();
                         }
@@ -231,7 +244,7 @@ namespace Penguin_Spinner_Casino_Game
                     break;
                 case Screen.lose:
                     payout = 0;
-                    if (mouse.LeftButton == ButtonState.Pressed && prevMouse.LeftButton == ButtonState.Released)
+                    if ((mouse.LeftButton == ButtonState.Pressed && prevMouse.LeftButton == ButtonState.Released) || simulation > 0)
                     {
                         screen = Screen.menu;
                         profit -= payout;
@@ -244,15 +257,16 @@ namespace Penguin_Spinner_Casino_Game
                             {
                                 writer.WriteLine(r);
                             }
+                            writer.WriteLine($"\nTotal Times Spun: {records.Count}, Times Won: {numberOfWins} \nTimes Dice: {numberOfDice}, Times Flip: {numberOfCF}, Times Jackpot: {numberOfJackpot}, Times InstaLose: {numberOfInstaLose}");
                             writer.WriteLine($"\nOur Profit: {profit}");
                             writer.Close();
                         }
                     }
                     break;
                 case Screen.dice:
-                    if (!rolled && (mouse.LeftButton == ButtonState.Pressed && prevMouse.LeftButton == ButtonState.Released))
+                    if (!rolled && ((mouse.LeftButton == ButtonState.Pressed && prevMouse.LeftButton == ButtonState.Released) || simulation > 0))
                     {
-                        if (rollButton.Rectangle.Contains(mouse.X, mouse.Y))
+                        if ((rollButton.Rectangle.Contains(mouse.X, mouse.Y)) || simulation > 0)
                         {
                             roll1 = rand.Next(1, 7);
                             roll2 = rand.Next(1, 7);
@@ -267,13 +281,14 @@ namespace Penguin_Spinner_Casino_Game
                             profit -= payout;
                         }
                     }
-                    else if (rolled && mouse.LeftButton == ButtonState.Pressed && prevMouse.LeftButton == ButtonState.Released)
+                    else if ((rolled && mouse.LeftButton == ButtonState.Pressed && prevMouse.LeftButton == ButtonState.Released) || simulation > 0)
                     {
                         screen = Screen.menu;
                         records.Add(new Records(bet, payout, true, roll1, roll2));
                         rolled = false;
                         numberOfDice += 1;
-                        numberOfWins += 1;
+                        if (payout != 0)
+                            numberOfWins += 1;
                         if (records.Count % 10 == 0)
                         {
                             StreamWriter writer = new($"SaveFile#{saveNum}.txt");
@@ -281,15 +296,16 @@ namespace Penguin_Spinner_Casino_Game
                             {
                                 writer.WriteLine(r);
                             }
+                            writer.WriteLine($"\nTotal Times Spun: {records.Count}, Times Won: {numberOfWins} \nTimes Dice: {numberOfDice}, Times Flip: {numberOfCF}, Times Jackpot: {numberOfJackpot}, Times InstaLose: {numberOfInstaLose}");
                             writer.WriteLine($"\nOur Profit: {profit}");
                             writer.Close();
                         }
                     }
                     break;
                 case Screen.coin:
-                    if (!flipped && (mouse.LeftButton == ButtonState.Pressed && prevMouse.LeftButton == ButtonState.Released))
+                    if (!flipped && ((mouse.LeftButton == ButtonState.Pressed && prevMouse.LeftButton == ButtonState.Released) || simulation > 0))
                     {
-                        if (flipButton.Rectangle.Contains(mouse.X, mouse.Y))
+                        if (flipButton.Rectangle.Contains(mouse.X, mouse.Y) || simulation >0 )
                         {
                             coinFlip = rand.Next(0, 2);
                             if (coinFlip == 0)
@@ -299,12 +315,13 @@ namespace Penguin_Spinner_Casino_Game
                             flipped = true;
                         }
                     }
-                    else if (flipped && mouse.LeftButton == ButtonState.Pressed && prevMouse.LeftButton == ButtonState.Released)
+                    else if ((flipped && mouse.LeftButton == ButtonState.Pressed && prevMouse.LeftButton == ButtonState.Released) || simulation > 0)
                     {
                         screen = Screen.menu;
                         profit -= payout;
                         numberOfCF += 1;
-                        numberOfWins += 1;
+                        if (payout != 0)
+                            numberOfWins += 1;
                         records.Add(new Records(bet, payout, true, coinFlip == 0));
                         flipped = false;
                         if (records.Count % 10 == 0)
@@ -314,6 +331,7 @@ namespace Penguin_Spinner_Casino_Game
                             {
                                 writer.WriteLine(r);
                             }
+                            writer.WriteLine($"\nTotal Times Spun: {records.Count}, Times Won: {numberOfWins} \nTimes Dice: {numberOfDice}, Times Flip: {numberOfCF}, Times Jackpot: {numberOfJackpot}, Times InstaLose: {numberOfInstaLose}");
                             writer.WriteLine($"\nOur Profit: {profit}");
                             writer.Close();
                         }

@@ -61,6 +61,7 @@ namespace Penguin_Spinner_Casino_Game
             numberOfJackpot = 0;
             bet = 5;
             rotationIncrease = 0.12f;
+            this.Window.Title = "Probability Penguins";
             base.Initialize();
             origin = new Vector2(textures[0].Width/2, textures[0].Height/2);
         }
@@ -141,9 +142,12 @@ namespace Penguin_Spinner_Casino_Game
                         {
                             if (simulation > 0)
                             {
-                                bet = randBet.Next(1, 26);
+                                bet = randBet.Next(2, 25);
                             }
-                            spin = rand.Next(1, 51);
+                            /*if (simulation == 0)
+                                spin = 2;
+                            else*/
+                                spin = rand.Next(1, 51);
                             spun = true;
                             profit += bet;
                             simulation--;

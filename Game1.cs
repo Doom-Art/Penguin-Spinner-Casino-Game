@@ -80,6 +80,7 @@ namespace Penguin_Spinner_Casino_Game
                 Content.Load<Texture2D>("PenguinDice"),
                 Content.Load<Texture2D>("Dice"),
                 Content.Load<Texture2D>("penguinCoin"),
+                Content.Load<Texture2D>("penguinsMad")
             };
             diceSourceRects = new Rectangle[6]
             {
@@ -360,6 +361,8 @@ namespace Penguin_Spinner_Casino_Game
                     b.Draw(_spriteBatch);
                 }
                 spinButton.Draw(_spriteBatch);
+                _spriteBatch.Draw(textures[7], new Rectangle(750, 70, 300, 150), Color.White);
+                _spriteBatch.Draw(textures[7], new Rectangle(750, 790, 300, 150), Color.White);
             }
             else if (screen == Screen.jackpot)
             {
@@ -382,6 +385,8 @@ namespace Penguin_Spinner_Casino_Game
                 {
                     _spriteBatch.Draw(textures[5], new Rectangle(500, 300, 350, 350), diceSourceRects[roll1 - 1], Color.White);
                     _spriteBatch.Draw(textures[5], new Rectangle(1000, 300, 350, 350), diceSourceRects[roll2 - 1], Color.White);
+                    _spriteBatch.DrawString(font, "+", new Vector2(900, 450), Color.Black);
+                    _spriteBatch.DrawString(font, $"= {roll1 + roll2}", new Vector2(1400, 450), Color.Black);
                     if (payout != 0)
                     {
                         _spriteBatch.DrawString(font, $"You Won {payout} from the Dice", new Vector2(440, 50), Color.Black);

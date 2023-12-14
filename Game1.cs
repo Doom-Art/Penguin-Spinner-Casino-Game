@@ -146,10 +146,7 @@ namespace Penguin_Spinner_Casino_Game
                             {
                                 bet = randBet.Next(2, 25);
                             }
-                            /*if (simulation == 0)
-                                spin = 2;
-                            else*/
-                                spin = rand.Next(1, 51);
+                            spin = rand.Next(1, 51);
                             spun = true;
                             profit += bet;
                             simulation--;

@@ -80,7 +80,8 @@ namespace Penguin_Spinner_Casino_Game
                 Content.Load<Texture2D>("PenguinDice"),
                 Content.Load<Texture2D>("Dice"),
                 Content.Load<Texture2D>("penguinCoin"),
-                Content.Load<Texture2D>("penguinsMad")
+                Content.Load<Texture2D>("penguinsMad"),
+                Content.Load<Texture2D>("7penguin")
             };
             diceSourceRects = new Rectangle[6]
             {
@@ -383,17 +384,24 @@ namespace Penguin_Spinner_Casino_Game
                 }
                 else
                 {
-                    _spriteBatch.Draw(textures[5], new Rectangle(500, 300, 350, 350), diceSourceRects[roll1 - 1], Color.White);
-                    _spriteBatch.Draw(textures[5], new Rectangle(1000, 300, 350, 350), diceSourceRects[roll2 - 1], Color.White);
-                    _spriteBatch.DrawString(font, "+", new Vector2(900, 450), Color.Black);
-                    _spriteBatch.DrawString(font, $"= {roll1 + roll2}", new Vector2(1400, 450), Color.Black);
-                    if (payout != 0)
+                    _spriteBatch.Draw(textures[5], new Rectangle(500, 260, 350, 350), diceSourceRects[roll1 - 1], Color.White);
+                    _spriteBatch.Draw(textures[5], new Rectangle(1000, 260, 350, 350), diceSourceRects[roll2 - 1], Color.White);
+                    _spriteBatch.DrawString(font, "+", new Vector2(900, 410), Color.Black);
+                    _spriteBatch.DrawString(font, $"= {roll1 + roll2}", new Vector2(1400, 410), Color.Black);
+                    if (payout == 2*bet)
                     {
-                        _spriteBatch.DrawString(font, $"You Won {payout} from the Dice", new Vector2(440, 50), Color.Black);
+                        _spriteBatch.DrawString(font, $"You Won {payout} from the Dice", new Vector2(450, 50), Color.Black);
+                        _spriteBatch.Draw(textures[2], new Rectangle(760, 660, 350, 350), Color.White);
+                    }
+                    else if (payout != 0)
+                    {
+                        _spriteBatch.DrawString(font, $"You Won {payout} from the Dice", new Vector2(450, 50), Color.Black);
+                        _spriteBatch.Draw(textures[8], new Rectangle(685, 660, 500, 350), Color.White);
                     }
                     else
                     {
-                        _spriteBatch.DrawString(font, "You Lost from the Dice\n  better luck next time", new Vector2(480, 30), Color.Black);
+                        _spriteBatch.DrawString(font, "You Lost from the Dice\n  better luck next time", new Vector2(500, 30), Color.Black);
+                        _spriteBatch.Draw(textures[3], new Rectangle(760, 660, 350, 350), Color.White);
                     }
                 }
             }

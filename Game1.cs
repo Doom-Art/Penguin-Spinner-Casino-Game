@@ -81,7 +81,9 @@ namespace Penguin_Spinner_Casino_Game
                 Content.Load<Texture2D>("Dice"),
                 Content.Load<Texture2D>("penguinCoin"),
                 Content.Load<Texture2D>("penguinsMad"),
-                Content.Load<Texture2D>("7penguin")
+                Content.Load<Texture2D>("7penguin"),
+                Content.Load<Texture2D>("JackpotPeng"), //9
+                Content.Load<Texture2D>("cryPeng"),
             };
             diceSourceRects = new Rectangle[6]
             {
@@ -364,12 +366,12 @@ namespace Penguin_Spinner_Casino_Game
             }
             else if (screen == Screen.jackpot)
             {
-                _spriteBatch.Draw(textures[2], new Rectangle(600, 220, 700, 700), Color.White);
+                _spriteBatch.Draw(textures[9], new Rectangle(600, 220, 700, 700), Color.White);
                 _spriteBatch.DrawString(font, $"You Won {payout} from the Jackpot\n                 Congrats!!", new Vector2(390, 30), Color.Black);
             }
             else if (screen == Screen.lose)
             {
-                _spriteBatch.Draw(textures[3], new Rectangle(600,220,700,700), Color.White);
+                _spriteBatch.Draw(textures[10], new Rectangle(600,220,700,700), Color.White);
                 _spriteBatch.DrawString(font, "You Lost from the instant Lose \n         better luck next time", new Vector2(390,30), Color.Black);
             }
             else if (screen == Screen.dice)
